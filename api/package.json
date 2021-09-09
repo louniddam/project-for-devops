@@ -9,6 +9,8 @@
     "watch": "npx tsc -w",
     "dev": "nodemon ./dist/index.js",
     "start": "node ./dist/index.js",
+    "db:migrate": "DATABASE_URL=\"mysql://root:rootroot@localhost:3306/mydb-fullstack?schema=public\" npx prisma migrate dev --name init",
+    "db:visualize": "DATABASE_URL=\"mysql://root:rootroot@localhost:3306/mydb-fullstack?schema=public\" npx prisma studio",
     "test": "npx jest"
   },
   "devDependencies": {
