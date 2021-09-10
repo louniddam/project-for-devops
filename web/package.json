@@ -5,7 +5,8 @@
   "author": "potedev <quentin@pote.dev>",
   "license": "MIT",
   "scripts": {
-    "dev": "npx parcel ./src/index.html"
+    "dev": "npx parcel ./src/index.html",
+    "build": "./node_modules/parcel/lib/bin.js build ./src/index.html"
   },
   "devDependencies": {
     "@parcel/transformer-less": "^2.0.0-rc.0",

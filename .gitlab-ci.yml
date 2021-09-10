@@ -1,0 +1,50 @@
+image: node:13
+
+before_script:
+  - "which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )"
+  - mkdir -p ~/.ssh
+  - echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
+  - chmod 700 ~/.ssh/id_rsa
+  - eval "$(ssh-agent -s)"
+  - ssh-add ~/.ssh/id_rsa
+  - ssh-keyscan -t rsa 64.227.1.160 > ~/.ssh/known_hosts
+  - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
+  - chmod 644 ~/.ssh/known_hosts
+
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - node_modules/
+
+stages:
+  - build
+  - deploy
+
+build_parcel_main:
+  stage: build
+  script:
+    - cd ./web/
+    - npm install
+    - node -v
+    - npm run build
+  artifacts:
+    expire_in: 20 mins
+    paths:
+      - ./web/dist
+  only:
+    - main
+
+deploy_main:
+  stage: deploy
+  variables:
+    SERVEUR: "lou@152.228.218.187"
+    CHEMIN: "/var/www/bookstore.lniddam.ovh/"
+  script:
+    - which rsync || ( apt update -y && apt install rsync -y )
+    - ls -la
+    - ls -la ./web/
+    - /sbin/ip route|awk '/default/ { print $3 }'
+    - ls ./web/dist/
+    - /usr/bin/rsync -r ./web/dist/ ${SERVEUR}:${CHEMIN}. --exclude-from="exclude.build"
+  only:
+    - main
